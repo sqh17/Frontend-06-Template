@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>green-red-yellow</title>
+  <style>
+    div{
+      display: inline-block;
+      height: 100px;
+      width: 100px;
+      border-radius: 50%;
+      background: gray;
+      margin: 30px;
+    }
+    .green.light{
+      background: green;
+    }
+    .red.light{
+      background:red;
+    }
+    .yellow.light{
+      background:yellow;
+    }
+  </style>
+</head>
+<body>
+  <div class="green"></div>
+  <div class="yellow"></div>
+  <div class="red"></div>
+  <script>
+    function green(){
+      let div = document.getElementsByTagName('div');
+      for(var i = 0;i<3;i++){
+        div[i].classList.remove('light');
+      }
+      document.getElementsByClassName('green')[0].classList.add('light')
+    }
+    function red(){
+      let div = document.getElementsByTagName('div');
+      for(var i = 0;i<3;i++){
+        div[i].classList.remove('light');
+      }
+      document.getElementsByClassName('red')[0].classList.add('light')
+    }
+    function yellow(){
+      let div = document.getElementsByTagName('div');
+      for(var i = 0;i<3;i++){
+        div[i].classList.remove('light');
+      }
+      document.getElementsByClassName('yellow')[0].classList.add('light')
+    }
+    
+    
+    function run(fun,timeout){
+      return new Promise((resolve,reject)=>{
+        setTimeout(()=>{
+          fun();
+          resolve()
+        }, timeout);
+      })
+    }
+    function go(){
+      run(green,1000).then(()=>{
+        return run(yellow,500)
+      }).then(()=>{
+        return run(red,500)
+      }).then(()=>{
+        return go()
+      })
+    }
+    go()
+  </script>
+</body>
+</html>
