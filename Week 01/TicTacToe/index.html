@@ -26,7 +26,7 @@
   <script>
     // 棋盘
     let pattern = [
-      [2, 0, 0],
+      [0, 2, 0],
       [0, 1, 0],
       [0, 0, 0]
     ]
@@ -55,7 +55,7 @@
       }
       // 更改值
       color = 2 / color;
-      
+      console.log(bestChoice(pattern,color))
       show(pattern)
       if(willWin(pattern,color)){
         console.log(color === 2 ? '⭕️ will winner':'❌ will winner')
@@ -69,18 +69,53 @@
     function willWin(pattern,color){
       for(let i = 0;i<pattern.length;i++){
         for(let j = 0;j<pattern[i].length;j++){
+          if(pattern[i][j]) continue  // 已有点跳过
+
+          let tmp = clone(pattern); // 克隆，不能破坏当前点，预估下一点
+          tmp[i][j] = color
+          if(check(tmp,color)){
+            return [i,j]
+          }
+        }
+      }
+      return null
+    }
+
+    function bestChoice(pattern,color){
+      let p;
+      // 若下一步能赢，直接返回
+      if(p = willWin(pattern,color)){
+        return {
+          point:p,
+          result:1
+        }
+      }
+      let result = -2;  // 设置最差结果
+      let point = null;
+      outer:
+      for(let i = 0;i<pattern.length;i++){
+        for(let j = 0;j<pattern[i].length;j++){
           if(pattern[i][j]) continue
 
           let tmp = clone(pattern);
           tmp[i][j] = color
-          if(check(tmp,color)){
-            return true
+          
+          let r = bestChoice(tmp,3 - color).result;
+
+          if(-r > result){
+            result = -r;
+            point = [i,j]
+          }
+          if(result === 1){
+            break outer // 剪枝，遇到最好的结果直接break
           }
         }
+      } 
+      return {
+        point:point,
+        result: point ? result:0 
       }
-      return false
     }
-    
     function check(pattern,color){
       // 三行
       for(let i = 0;i<=pattern.length - 1;i++){
@@ -126,6 +161,7 @@
       return false
     }
     show(pattern);
+    console.log(bestChoice(pattern,color))
   </script>
 </body>
 </html>
