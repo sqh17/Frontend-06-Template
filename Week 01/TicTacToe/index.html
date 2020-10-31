@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>tic-tac-toe</title>
+  <style>
+    .cell{
+      width:100px;
+      height:100px;
+      background:green;
+      display: inline-block;
+      border: 1px solid #fff;
+      vertical-align: middle;
+      line-height: 100px;
+      font-size: 50px;
+      text-align: center
+    }
+  
+  
+  </style>
+</head>
+<body>
+  <div id="board"></div>
+  <script>
+    // 棋盘
+    let pattern = [
+      [2, 0, 0],
+      [0, 1, 0],
+      [0, 0, 0]
+    ]
+    let color = 1;
+    function show(pattern){
+      let board = document.getElementById('board');
+      board.innerHTML = ''; // 每次操作需要清空棋盘
+      for(let i = 0;i<=pattern.length - 1;i++){
+        for(let j = 0;j<=pattern[i].length - 1;j++){
+          let div = document.createElement('div');
+          div.classList.add('cell');
+          div.addEventListener('click',()=>{move(i,j)})
+          div.innerHTML = pattern[i][j] === 2 ? '⭕️' : pattern[i][j] === 1 ? '❌' : ''; // 绘制
+          board.appendChild(div);
+        }
+        var br = document.createElement('br') // 换行
+        board.appendChild(br)
+      }
+    }
+
+    function move(i,j){
+      // 设置当前选中的值
+      pattern[i][j] = color;
+      if(check(pattern,color)){
+        alert(color === 2 ? '⭕️ is winner':'❌ is winner')
+      }
+      // 更改值
+      color = 2 / color;
+      
+      show(pattern)
+      if(willWin(pattern,color)){
+        console.log(color === 2 ? '⭕️ will winner':'❌ will winner')
+      }
+    }
+
+    function clone(val){
+      return JSON.parse(JSON.stringify(val))
+    }
+
+    function willWin(pattern,color){
+      for(let i = 0;i<pattern.length;i++){
+        for(let j = 0;j<pattern[i].length;j++){
+          if(pattern[i][j]) continue
+
+          let tmp = clone(pattern);
+          tmp[i][j] = color
+          if(check(tmp,color)){
+            return true
+          }
+        }
+      }
+      return false
+    }
+    
+    function check(pattern,color){
+      // 三行
+      for(let i = 0;i<=pattern.length - 1;i++){
+        let res = true;
+        for(let j = 0;j<=pattern[i].length - 1;j++){
+          if(pattern[i][j] !== color){
+            res = false
+          }
+        }
+        if(res) return true
+      }
+
+      // 三列
+      for(let i = 0;i<=pattern.length - 1;i++){
+        let res = true;
+        for(let j = 0;j<=pattern[i].length - 1;j++){
+          if(pattern[j][i] !== color){
+            res = false
+          }
+        }
+        if(res) return true
+      }
+      // 斜向
+      {
+        let res = true;
+        for(let i = 0;i<=pattern.length - 1;i++){
+          if(pattern[i][2 - i] !== color){
+            res = false
+          }
+        }
+        if(res) return true;
+      }
+      {
+        let res = true;
+        for(let i = 0;i<=pattern.length - 1;i++){
+          if(pattern[i][i] !== color){
+            res = false
+          }
+          
+        }
+        if(res) return true;
+      }
+      return false
+    }
+    show(pattern);
+  </script>
+</body>
+</html>
