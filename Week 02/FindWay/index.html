@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>寻路</title>
+  <style>
+    .cell{
+      width: 6px;
+      height: 6px;
+      background: gray;
+      border-right: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+      
+    }
+    #container{
+      width: 701px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <button >保存</button>
+  <script>
+    let map = Array(10000).fill(0);
+    let dom = document.getElementById('container')
+    for(let i = 0;i<100;i++){
+      for(let j = 0;j<100;j++){
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        if(map[100*i + j] === 1){
+          cell.style.background = '#000'
+        }
+        cell.addEventListener('mousemove',e=>{
+          if(mouseStatus){
+            if(clearStatus){
+              cell.style.background = '';
+            }else{
+              cell.style.background = 'red';
+            }
+          }
+        })
+        dom.appendChild(cell)
+      }
+    }
+    let mouseStatus = false;//是否处于按键状态；
+    let clearStatus = false;// 是否处于清除状态  左键画，右键清除
+    dom.addEventListener('mousedown',e=>{
+      mouseStatus = true;
+      if(e.which === '3'){
+        clearStatus = true
+      }
+    })
+    dom.addEventListener('mouseup',e=>{
+      mouseStatus = false;
+    })
+    dom.addEventListener('contextmenu',(e)=>{
+      e.preventDefault();
+    })
+  </script>
+</body>
+</html>
