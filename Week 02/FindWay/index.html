@@ -23,34 +23,36 @@
 </head>
 <body>
   <div id="container"></div>
-  <button >保存</button>
+  <button onclick="localStorage['map']=JSON.stringify(map)">保存</button>
   <script>
-    let map = Array(10000).fill(0);
+    let map = localStorage.getItem('map')?JSON.parse(localStorage.getItem('map')) :Array(10000).fill(0);
     let dom = document.getElementById('container')
     for(let i = 0;i<100;i++){
       for(let j = 0;j<100;j++){
         let cell = document.createElement('div');
         cell.classList.add('cell');
-        if(map[100*i + j] === 1){
+        if(map[100*i + j] === 1){ // 变墙
           cell.style.background = '#000'
         }
         cell.addEventListener('mousemove',e=>{
           if(mouseStatus){
-            if(clearStatus){
+            if(clearStatus){ // 左键
               cell.style.background = '';
+              map[100*i + j] = 0;
             }else{
               cell.style.background = 'red';
+              map[100*i + j] = 1;
             }
           }
         })
         dom.appendChild(cell)
       }
     }
-    let mouseStatus = false;//是否处于按键状态；
+    let mouseStatus = false;//是否处于按住状态；
     let clearStatus = false;// 是否处于清除状态  左键画，右键清除
     dom.addEventListener('mousedown',e=>{
       mouseStatus = true;
-      if(e.which === '3'){
+      if(e.which === 3){
         clearStatus = true
       }
     })
@@ -60,6 +62,36 @@
     dom.addEventListener('contextmenu',(e)=>{
       e.preventDefault();
     })
+
+    function findPath(map,start,end){
+      let queue = [start];// 模拟队列，先进先出
+      // 入列
+      function insert(x,y){
+        // 边界
+        if(x < 0 || x >= 100 || y < 0 || y >= 100 ) return
+        // 遇到墙时和已经找过时
+        if(map[100*x + y]) return
+
+        map[100 * x + y] = 2; // 设置一个状态，说明这是已经找过了，下次不用再重复找，
+
+        queue.push([x,y])
+      }
+      while(queue.length){
+        let [x,y] = queue.shift();
+        if(x === end[0] && y === end[1]){
+          // 当找到的点是最后一个点时，返回true
+          return true
+        }
+
+        insert(x - 1, y);
+        insert(x, y - 1);
+        insert(x + 1,y);
+        insert(x, y + 1);
+
+        
+      }
+      return false
+    }
   </script>
 </body>
 </html>
