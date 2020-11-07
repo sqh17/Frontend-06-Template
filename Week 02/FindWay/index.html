@@ -30,6 +30,34 @@
     let mouseStatus = false;//是否处于按住状态；
     let clearStatus = false;// 是否处于清除状态  左键画，右键清除
     let dom = document.getElementById('container')
+
+    class Sorted{
+      constructor(data,compare){
+        this.data = data.slice();
+        this.compare = compare || ((a,b) => a-b)
+      }
+      take(){
+        if(!this.data.length) return 
+        let min = this.data[0]; // 默认第一个是最小的
+        let minIndex = 0;
+        for(let i = 1;i < this.data.length;i++){
+          if(this.compare(this.data[i],min) < 0){
+            min = this.data[i];
+            minIndex = i;
+          }
+        }
+        this.data[minIndex] = this.data[this.data.length - 1]; 
+        this.data.pop(); // 先替换，后删除
+        return min; 
+      }
+      give(data){
+        this.data.push(data);
+      }
+      get length(){
+        return this.data.length;
+      }
+    }
+
     // 绘制
     function render(){
       for(let i = 0;i<100;i++){
@@ -83,7 +111,8 @@
     }
     // 寻路算法
     async function findPath(map,start,end){
-      let queue = [start];// 模拟队列，先进先出
+      let queue = new Sorted([start],(a,b) => distance(a) - distance(b));
+      console.log(queue)
       let table = Object.create(map); // 创建一个集合
       // 入列
       async function insert(x,y,pre){
@@ -94,10 +123,13 @@
         
         dom.childNodes[x * 100 + y].style.background = 'lightGreen';
         table[ x * 100 + y] = pre; 
-        queue.push([x,y])
+        queue.give([x,y])
+      }
+      function distance(point){
+        return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2
       }
       while(queue.length){
-        let [x,y] = queue.shift();
+        let [x,y] = queue.take();
         if(x === end[0] && y === end[1]){
           
           let path = [];
