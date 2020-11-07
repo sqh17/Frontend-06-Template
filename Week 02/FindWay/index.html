@@ -26,54 +26,65 @@
   <button onclick="localStorage['map']=JSON.stringify(map)">保存</button>
   <script>
     let map = localStorage.getItem('map')?JSON.parse(localStorage.getItem('map')) :Array(10000).fill(0);
-    let dom = document.getElementById('container')
-    for(let i = 0;i<100;i++){
-      for(let j = 0;j<100;j++){
-        let cell = document.createElement('div');
-        cell.classList.add('cell');
-        if(map[100*i + j] === 1){ // 变墙
-          cell.style.background = '#000'
-        }
-        cell.addEventListener('mousemove',e=>{
-          if(mouseStatus){
-            if(clearStatus){ // 左键
-              cell.style.background = '';
-              map[100*i + j] = 0;
-            }else{
-              cell.style.background = 'red';
-              map[100*i + j] = 1;
-            }
-          }
-        })
-        dom.appendChild(cell)
-      }
-    }
     let mouseStatus = false;//是否处于按住状态；
     let clearStatus = false;// 是否处于清除状态  左键画，右键清除
-    dom.addEventListener('mousedown',e=>{
-      mouseStatus = true;
-      if(e.which === 3){
-        clearStatus = true
+    let dom = document.getElementById('container')
+    // 绘制
+    function render(){
+      for(let i = 0;i<100;i++){
+        for(let j = 0;j<100;j++){
+          let cell = document.createElement('div');
+          cell.classList.add('cell');
+          if(map[i * 100 + j] === 1){ // 变墙
+            cell.style.background = '#000'
+          }
+          cell.addEventListener('mousemove',e=>{
+            if(mouseStatus){
+              if(clearStatus){ // 右键
+                cell.style.background = '';
+                map[i * 100 + j] = 0;
+              }else{
+                cell.style.background = 'red';
+                map[i * 100 + j] = 1;
+              }
+            }
+          })
+          dom.appendChild(cell)
+        }
       }
-    })
-    dom.addEventListener('mouseup',e=>{
-      mouseStatus = false;
-    })
-    dom.addEventListener('contextmenu',(e)=>{
-      e.preventDefault();
-    })
-
-    function findPath(map,start,end){
+    }
+    
+    // 绑定事件
+    function event(){
+      // 按下
+      dom.addEventListener('mousedown',e=>{
+        mouseStatus = true;
+        if(e.which === 3){
+          clearStatus = true
+        }
+      })
+      // 起开
+      dom.addEventListener('mouseup',e=>{
+        mouseStatus = false;
+      })
+      // 禁用鼠标右键菜单
+      dom.addEventListener('contextmenu',(e)=>{
+        e.preventDefault();
+      })
+    }
+  
+    // 寻路算法
+    async function findPath(map,start,end){
       let queue = [start];// 模拟队列，先进先出
       // 入列
-      function insert(x,y){
+      async function insert(x,y){
         // 边界
         if(x < 0 || x >= 100 || y < 0 || y >= 100 ) return
         // 遇到墙时和已经找过时
-        if(map[100*x + y]) return
-
-        map[100 * x + y] = 2; // 设置一个状态，说明这是已经找过了，下次不用再重复找，
-
+        if(map[x * 100 + y]) return
+        await sleep(30);
+        dom.childNodes[x * 100 + y].style.background = 'lightGreen';
+        map[ x * 100 + y] = 2; // 设置一个状态，说明这是已经找过了，下次不用再重复找，
         queue.push([x,y])
       }
       while(queue.length){
@@ -82,16 +93,32 @@
           // 当找到的点是最后一个点时，返回true
           return true
         }
-
-        insert(x - 1, y);
-        insert(x, y - 1);
-        insert(x + 1,y);
-        insert(x, y + 1);
-
-        
+        // 上下左右
+        await insert(x - 1, y);
+        await insert(x, y - 1);
+        await insert(x + 1,y);
+        await insert(x, y + 1);
+        // 斜向
+        // await insert(x - 1, y - 1);
+        // await insert(x + 1, y - 1);
+        // await insert(x + 1,y + 1);
+        // await insert(x - 1, y + 1);
       }
       return false
     }
+
+    // 可视
+    function sleep(t){
+      return new Promise(reslove=>{
+        setTimeout(reslove,t)
+      })
+    }
+    // 主流程
+    function main(){
+      render();
+      event();
+    }
+    main()
   </script>
 </body>
 </html>
