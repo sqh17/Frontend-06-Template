@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>正则表达式</title>
+</head>
+<body>
+  <script>
+    var reg = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+    var dictionary = ['Number','WhiteSpace','LineTerminator','*','/','+','-'];
+    
+    function tokenize(source){
+      let res = null;
+      while(true){
+        res = reg.exec(source)
+        if(!res) break;
+
+        for(let i = 1;i<dictionary.length;i++){ // 因为0是整个匹配得到的
+          if(res[i]){
+            console.log('i',dictionary[i - 1])
+          }
+        }
+        console.log(res);
+      }
+    }
+    tokenize('1024 + 10 * 25')
+  </script>
+</body>
+</html>
