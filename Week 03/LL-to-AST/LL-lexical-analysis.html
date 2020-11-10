@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>正则表达式</title>
+</head>
+<body>
+  <script>
+    var reg = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+    var dictionary = ['Number','WhiteSpace','LineTerminator','*','/','+','-'];
+    
+    function* tokenize(source){
+      let res = null;
+      let lastIndex = 0
+      while(true){
+        res = reg.exec(source);
+        lastIndex = reg.lastIndex;
+
+        if(!res) break;
+
+        if(reg.lastIndex - lastIndex > res[0].length) break;
+
+        let token = {
+          type:null,
+          value:null
+        }
+
+        for(let i = 1;i<dictionary.length;i++){ // 因为0是整个匹配得到的
+          if(res[i]){
+            token.type = dictionary[i - 1]
+          }
+        }
+        token.value = res[0];
+        yield token
+      }
+      yield token ={
+        type:'EOF'
+      }
+    }
+    for(var token of tokenize('1024 + 10 * 25')){
+      console.log(token)
+    }
+  </script>
+</body>
+</html>
