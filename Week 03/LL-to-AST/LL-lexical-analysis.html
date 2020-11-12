@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>正则表达式</title>
+  <title>词法分析</title>
 </head>
 <body>
   <script>
@@ -18,9 +18,9 @@
         res = reg.exec(source);
         lastIndex = reg.lastIndex;
 
-        if(!res) break;
+        if(!res) break; // 当没匹配到
 
-        if(reg.lastIndex - lastIndex > res[0].length) break;
+        if(reg.lastIndex - lastIndex > res[0].length) break; // 当遇到不认识的
 
         let token = {
           type:null,
@@ -39,7 +39,7 @@
         type:'EOF'
       }
     }
-    for(var token of tokenize('1024 + 10 * 25')){
+    for(var token of tokenize('1024+ 10 * 25')){
       console.log(token)
     }
   </script>

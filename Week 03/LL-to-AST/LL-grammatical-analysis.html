@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>语法分析</title>
+</head>
+<body>
+  <script>
+    var reg = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+    var dictionary = ['Number','WhiteSpace','LineTerminator','*','/','+','-'];
+    
+    function* tokenize(source){
+      let res = null;
+      let lastIndex = 0
+      while(true){
+        res = reg.exec(source);
+        lastIndex = reg.lastIndex;
+
+        if(!res) break; // 当没匹配到
+
+        if(reg.lastIndex - lastIndex > res[0].length) break; // 当遇到不认识的
+
+        let token = {
+          type:null,
+          value:null
+        }
+
+        for(let i = 1;i<dictionary.length;i++){ // 因为0是整个匹配得到的
+          if(res[i]){
+            token.type = dictionary[i - 1]
+          }
+        }
+        token.value = res[0];
+        yield token
+      }
+      yield token ={
+        type:'EOF'
+      }
+    }
+    let source = []
+    for(var token of tokenize('10 * 25 / 12')){
+      // console.log(token);
+      if(token.type === 'WhiteSpace' || token.type === 'LineTerminator') continue;
+      source.push(token)
+    }
+
+    function Expression(){
+
+    }
+
+    function AdditiveExpression(source){
+
+    }
+
+    function MultiplicativeExpression(source){
+      if(source[0].type === 'Number'){
+        let node = {
+          type: 'MultiplicativeExpression',
+          children:[source[0]]
+        };
+        source[0] = node;
+        return MultiplicativeExpression(source); // 递归，会继续找终结符化非终结符
+
+      }
+      // 当遇到 * 或者 / 时
+      if(source[0].type === 'MultiplicativeExpression' && source[1] && (source[1].type === '*' || source[1].type === '/')){
+        let node = {
+          type: 'MultiplicativeExpression',
+          operator:source[1].type,
+          children:[]
+        }
+        // 将前三项合为一个MultiplicativeExpression
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        node.children.push(source.shift());
+        // 将新的MultiplicativeExpression添加到source的前部
+        source.unshift(node) 
+        return MultiplicativeExpression(source)
+      }
+      // 当遇到MultiplicativeExpression时从新递归
+      if(source[0].type === 'MultiplicativeExpression')
+        return source[0]
+
+      // return MultiplicativeExpression(source)
+    }
+    console.log(MultiplicativeExpression(source))
+  </script>
+</body>
+</html>
