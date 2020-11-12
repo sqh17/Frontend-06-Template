@@ -27,7 +27,7 @@
           value:null
         }
 
-        for(let i = 1;i<dictionary.length;i++){ // 因为0是整个匹配得到的
+        for(let i = 1;i<=dictionary.length;i++){ // 因为0是整个匹配得到的
           if(res[i]){
             token.type = dictionary[i - 1]
           }
@@ -40,20 +40,55 @@
       }
     }
     let source = []
-    for(var token of tokenize('10 * 25 / 12')){
+    for(var token of tokenize('10 + 25 * 2 - 12')){
       // console.log(token);
       if(token.type === 'WhiteSpace' || token.type === 'LineTerminator') continue;
       source.push(token)
     }
+    // 四则运算
+    function Expression(source){
+      if(source[0].type === 'AdditiveExpression' && source[1].type === 'EOF'){
+        let node = {
+          type:'Expression',
+          children:[source.shift(),source.shift()]
+        }
+        source.unshift(node)
+        return node
+      }
 
-    function Expression(){
-
+      AdditiveExpression(source)
+      return Expression(source)
     }
-
+    // 加减
     function AdditiveExpression(source){
+      if(source[0].type === 'MultiplicativeExpression'){
+        let node = {
+          type:'AdditiveExpression',
+          children:[source[0]]
+        }
+        source[0] = node;
+        return AdditiveExpression(source)
+      }
 
+      if(source[0].type === 'AdditiveExpression' && source[1] && (source[1].type === '+' || source[1].type === '-')){
+        let node = {
+          type:'AdditiveExpression',
+          operator:source[1].type,
+          children:[]
+        }
+        node.children.push(source.shift()); // AdditiveExpression
+        node.children.push(source.shift()); // + 或者 - 
+        MultiplicativeExpression(source); // -----因为这项进行时会遇到Number，需要进行MultiplicativeExpression
+        node.children.push(source.shift());
+        source.unshift(node);
+        return AdditiveExpression(source)
+      }  
+      if(source[0].type === 'AdditiveExpression')
+        return source[0]
+      MultiplicativeExpression(source)  // 一进来是Number，需要先进行优先级最高的乘除函数方式
+      return AdditiveExpression(source)
     }
-
+    // 乘除
     function MultiplicativeExpression(source){
       if(source[0].type === 'Number'){
         let node = {
@@ -61,7 +96,7 @@
           children:[source[0]]
         };
         source[0] = node;
-        return MultiplicativeExpression(source); // 递归，会继续找终结符化非终结符
+        return MultiplicativeExpression(source); // 递归
 
       }
       // 当遇到 * 或者 / 时
@@ -79,13 +114,13 @@
         source.unshift(node) 
         return MultiplicativeExpression(source)
       }
-      // 当遇到MultiplicativeExpression时从新递归
+      // 当遇到MultiplicativeExpression时从新递归，其余情况
       if(source[0].type === 'MultiplicativeExpression')
         return source[0]
 
-      // return MultiplicativeExpression(source)
+      return MultiplicativeExpression(source)
     }
-    console.log(MultiplicativeExpression(source))
+    console.log(Expression(source))
   </script>
 </body>
 </html>

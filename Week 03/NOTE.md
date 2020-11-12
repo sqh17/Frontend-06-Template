@@ -3,6 +3,15 @@
 * AST 抽象语法树
   核心思想：LL算法和LR算法
 
+* LL语法分析
+  
+      <AdditiveExpression> ::=
+        <Number> 
+        | <MultiplicativeExpression> <*> <Number>
+        | <MultiplicativeExpression> </> <Number>
+        | <AdditiveExpression> <+> <MultiplicativeExpression>
+        | <AdditiveExpression> <-> <MultiplicativeExpression>
+  
 * 正则
   * 小括号代表的是捕获，匹配里面的字符并获取这一匹配
   * 中括号是包含关系，匹配所包含的任意一个字符
@@ -19,8 +28,8 @@
   * 每个RegExp对象都包含5个属性，source、global、ignoreCase、multiline、lastIndex。
     1. source：是一个只读的字符串，包含正则表达式的文本。
 
-          var reg = /JavaScript/;
-          reg.source; //返回 JavaScript
+            var reg = /JavaScript/;
+            reg.source; //返回 JavaScript
 
     2. global：是一个只读的布尔值，看这个正则表达式是否带有修饰符g。
       修饰符g，是全局匹配的意思，检索字符串中所有的匹配。
@@ -68,3 +77,27 @@
 
             reg.exec(str); // ["Javascript", index: 11, input: "Javascript Javascript", groups: undefined]
             reg.lastIndex; // 21
+
+* shift()与unshift()
+  * shift() 代表删除数组的第一个，并返回删除的值
+  * unshift(val) 代表在数组的最前面添加一个val,返回新的数组长度
+
+* arr.filter()
+  过滤数组，返回满足条件的数组
+
+      [1,2,3,4,5].filter(i=>i<=3) //  [1, 2, 3]
+
+* switch (value) { case val:} 
+  在语法分析时， MultiplicativeExpression函数可以采用这个方式，所谓的if就是对应的不同的情况
+  __case的满足情况时切记要break__
+
+      switch (val) {
+        case '1':
+          console.log('1')
+          break
+        case '2':
+          console.log('2')
+          break
+        default :
+          console.log('err')
+      }
