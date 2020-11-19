@@ -12,7 +12,7 @@
   一个字符串里是否包含另一个字符串 
 
   部分匹配值：就是"前缀"和"后缀"的最长的共有元素的长度(参考[阮一峰字符串匹配的KMP算法](http://www.ruanyifeng.com/blog/2013/05/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm.html) )
-
+	[KMP字符串匹配算法](https://www.bilibili.com/video/BV1Ys411d7yh?05%3A33)
       搜索词     A B C D A B D
       部分匹配值  0 0 0 0 1 2 0
 
