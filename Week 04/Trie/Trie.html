@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>字典树</title>
+</head>
+<body>
+  <script>
+    let $ = Symbol('$'); // 利用symbol独一无二的特性
+    class Trie{
+      constructor(){
+        this.root = Object.create(null)
+      }
+      // 插入
+      insert(word){
+        let root = this.root;
+        for(let c of word){
+          if(!root[c]){
+            root[c] = Object.create(null);
+          }
+          root = root[c]
+        }
+        // 截止符，比如ab和abc，我们需要在ab后面加上截止符
+        if(!($ in root)) root[$] = 0;
+        root[$]++
+      }
+      // 获取最多字符
+      most(){
+        let max = 0;
+        let maxWord = null;
+        let visit = (root,word)=>{
+          if(root[$] && root[$] > max){
+            max = root[$];
+            maxWord = word;
+          }
+          for(let c in root){
+            visit(root[c],word + c)
+          }
+        }
+        visit(this.root,'');
+        console.log(maxWord,max)
+
+      }
+    }
+    // 随机字符
+    function randomString(length){
+      let s = '';
+      for(let i = 0;i<length;i++){
+        s += String.fromCharCode(Math.random() * 26 + 'a'.charCodeAt(0)) 
+      }
+      return s
+    }
+
+    let trie = new Trie();
+    for(let i = 0;i<100000;i++){
+      trie.insert(randomString(4))
+    }
+  </script>
+</body>
+</html>
