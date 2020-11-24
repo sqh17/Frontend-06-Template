@@ -7,12 +7,13 @@
 </head>
 <body>
   <script>
+    let callbacks = [];
     let obj = {
       a:1,
       b:2
     }
     let po = reactive(obj)
-    
+
     // 模拟事件监听 
     effect(()=>{
       console.log(po.a)
@@ -24,6 +25,9 @@
         set(obj,prop,val){
           obj[prop] = val; // 赋值
           console.log(obj,prop,val);
+          for(let cb of callbacks){
+            cb()
+          }
           return obj[prop]
         },
         get(obj,prop){
@@ -32,6 +36,10 @@
       })
     }
 
+
+    function effect(callback){
+      callbacks.push(callback);
+    }
   </script>
 </body>
 </html>
