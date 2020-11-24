@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模仿vue3的reactive实现原理</title>
+</head>
+<body>
+  <script>
+    let obj = {
+      a:1,
+      b:2
+    }
+    let po = reactive(obj)
+    
+    // 模拟事件监听 
+    effect(()=>{
+      console.log(po.a)
+    })
+
+
+    function reactive(object){
+      return new Proxy(object,{
+        set(obj,prop,val){
+          obj[prop] = val; // 赋值
+          console.log(obj,prop,val);
+          return obj[prop]
+        },
+        get(obj,prop){
+          return obj[prop]
+        }
+      })
+    }
+
+  </script>
+</body>
+</html>
