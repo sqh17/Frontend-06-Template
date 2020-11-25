@@ -8,21 +8,28 @@
 <body>
   <script>
     let callbacks = new Map();
+    let reactivities = new Map();// 设置缓存
     let usedReactivities = [];
     let obj = {
-      a:1,
+      a:{
+        b:1
+      },
       b:2
     }
     let po = reactive(obj)
 
     // 模拟事件监听 
     effect(()=>{
-      console.log(po.a)
+      console.log(po.a.b)
     })
 
 
     function reactive(object){
-      return new Proxy(object,{
+      // 设置缓存，当reactivities有该对象时，直接取
+      if(reactivities.has(object)){
+        return reactivities.get(object)
+      }
+      let proxy =  new Proxy(object,{
         set(obj,prop,val){
           obj[prop] = val; // 赋值
           // console.log(obj,prop,val);
@@ -35,9 +42,15 @@
         },
         get(obj,prop){
           usedReactivities.push([obj,prop])
+          // 当对象中嵌套一个对象时
+          if(typeof obj[prop] === 'object'){
+            return reactive(obj[prop])
+          }
           return obj[prop]
         }
       })
+      reactivities.set(object,proxy);
+      return proxy
     }
 
 
