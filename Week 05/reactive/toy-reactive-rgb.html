@@ -3,27 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>模仿vue3的reactive实现原理</title>
+  <title>模仿vue3的reactive实现原理--rgb取色器双向绑定</title>
 </head>
 <body>
+  <input type="range" id="r" min="0" max="255" value="1">
+  <input type="range" id="g" min="0" max="255" value="1">
+  <input type="range" id="b" min="0" max="255" value="1">
+  <div id="rgb" style="width: 200px;height:200px;"></div>
   <script>
+    let r = document.getElementById('r');
+    let g = document.getElementById('g');
+    let b = document.getElementById('b');
+    let rgb = document.getElementById('rgb');
     // 可以通过log回退查看每步操作
     let callbacks = new Map();
     let reactivities = new Map();// 设置缓存
     let usedReactivities = [];
     let obj = {
-      a:{
-        b:1
-      },
-      b:2
+      r:'1',
+      g:'1',
+      b:'1'
     }
     let po = reactive(obj)
 
     // 模拟事件监听 
     effect(()=>{
-      console.log(po.a.b)
+      r.value = po.r
+    })
+    effect(()=>{
+      g.value = po.g
+    })
+    effect(()=>{
+      b.value = po.b
+    })
+    r.addEventListener('input',e=>{
+      po.r = e.target.value
+    })
+    g.addEventListener('input',e=>{
+      po.g = e.target.value
+    })
+    b.addEventListener('input',e=>{
+      po.b = e.target.value
     })
 
+    effect(()=>{
+      rgb.style.background = `rgb(${po.r},${po.g},${po.b})`
+    })
 
     function reactive(object){
       // 设置缓存，当reactivities有该对象时，直接取
