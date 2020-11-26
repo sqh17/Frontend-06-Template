@@ -6,7 +6,7 @@
   <title>使用Range实现DOM精确操作</title>
 </head>
 <body>
-  <div>文字文字文字文字文字文字文字文字文字文字文文字文字文字文字文字文字文字文字文字文字文字文字文字
+  <div id="container">文字文字文字文字文字文字文字文字文字文字文文字文字文字文字文字文字文字文字文字文字文字文字文字
     文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字
     文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字
     文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字
@@ -22,7 +22,7 @@
     文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字
     文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字
     文字字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字</div>
-  <div id="dragable" style="width: 100px;height:100px;background:lightblue"></div>
+  <div id="dragable" style="display:inline-block;width: 100px;height:100px;background:lightblue"></div>
   <script>
     let dragable = document.getElementById('dragable');
     // 保存translate后的值
@@ -41,13 +41,41 @@
       }
       // 移动时
       let move = (e)=>{
-        dragable.style.transform = `translate(${baseX + e.clientX - startX}px,${baseY + e.clientY - startY}px)`
+        // dragable.style.transform = `translate(${baseX + e.clientX - startX}px,${baseY + e.clientY - startY}px)`
+        let range = getNearest(e.clientX,e.clientY);
+        range.insertNode(dragable)// 在移动中会把dragable给移除掉
       }
       document.addEventListener('mouseup',up)
       document.addEventListener('mousemove',move)
-    })
 
-    
+
+    })
+    let ranges = [];
+    let container = document.getElementById('container');
+    // 创建range
+    for(let i = 0; i<container.childNodes[0].textContent.length;i++){
+      let range = document.createRange();
+      range.setStart(container.childNodes[0],i);
+      range.setEnd(container.childNodes[0],i);
+      ranges.push(range);
+    }
+
+    function getNearest(x,y){
+      let min = Infinity;
+      let nearest = null;
+      for(let r of ranges){
+        let rect = r.getBoundingClientRect(); // cssom是实时变化的，所以需要在这里重新记录
+        let distance = (rect.x - x) ** 2 + (rect.y - y) ** 2 // 平方根求距离
+
+        if(distance < min){
+          nearest = r;
+          min = distance;
+        }
+      }
+      return nearest;
+    }
+
+    document.addEventListener('selectstart',e=>e.preventDefault())// 禁止选中
   </script>
 </body>
 </html>

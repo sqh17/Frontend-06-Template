@@ -37,3 +37,53 @@ Proxy 对象用于定义基本操作的自定义行为（如属性查找，赋�
   * addEventListener即鼠标移到浏览器外也能监听到
   * 差值，鼠标点在哪里，就从哪里开始拖动，在mousedown设置x，y的变量
   * 记录量，用来存取translate之后的位置
+
+
+* CSSOM
+CSSOM是一组允许JavaScript操作CSS的API。它非常类似于DOM，但是用于CSS而不是HTML。它允许用户动态读取和修改CSS样式著作权归作者所有。
+
+* Range
+  表示一个包含节点与文本节点的一部分的文档片段
+  * 创建
+    document.createRange()创建一个范围，这个范围是range类型的实例
+  * 属性
+    * Range.collapsed 返回一个 Boolean 值表示是否起始点和结束点是同一个位置。 如果返回 true 表示Range 的起始位置和结束位置重合, false 表示不重合
+    * Range.commonAncestorContainer 返回目标节点的共有祖先节点
+    * Range.endContainer 会返回Range对象结束的Node
+    * Range.endOffset 返回代表 Range 结束位置在 Range.endContainer 中的偏移值的数字
+    * Range.startContainer 返回Range开始的节点
+    * Range.startOffset 返回一个表示 Range 在 startContainer 中的起始位置的数字。
+  * 方法
+    * Range.setStart(startNode, startOffset) 设置 Range的开始位置
+      startNode 用于设定 Range的起始位置
+      startOffset 必须为不小于0的整数。表示从startNode的开始位置算起的偏移量
+    * Range.setEnd(endNode, endOffset) 设置 Range的结束位置
+      endNode用于设定 Range的结束位置
+      endOffset必须为不小于0的整数。表示从endNode的结束位置算起的偏移量。
+    * selectNode()和selectNodeContents()方法用来选择文档中的某一部分。
+
+          var range = document.createRange();
+          range.selectNode(node)   // 参数为node节点，把整个node节点的信息，包括子节点中的内容填充到范围range内。
+          range.selectNodeContents(node)  // 参数为node节点，把node节点的子节点信息填充到范围range内。
+    * deleteContents() 从文档中彻底删除范围所包含的内容。
+
+          var sec = document.getElementById('sec')
+          var range = document.createRange();
+          range.selectNode(sec);
+          range.deleteContents();   //删除sec节点
+
+    * extractContents()：从文档中移除范围选区。这个方法的返回值是移除的片段，利用这个返回值，可以把这个片段插入到页面的其他地方
+
+          var sec1 = document.getElementById('sec1');
+          var sec2 = document.getElementById('sec2');
+
+          var range = document.createRange();
+          range.selectNode(sec1);      //创建范围的内容
+          var fragment = range.extractContents();       //从文档中移除范围选区
+          sec2.parentNode.appendChild(fragment);      //在页面的某处插入范围中被移除的节点
+
+    * cloneRange()：复制范围，创建调用它的范围的副本。
+
+          var newRange = range.cloneRange();
+
+  [Range资料](https://www.jianshu.com/p/ad2f818cc3b0)
