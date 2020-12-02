@@ -40,7 +40,7 @@ Proxy 对象用于定义基本操作的自定义行为（如属性查找，赋�
 
 
 * CSSOM
-CSSOM是一组允许JavaScript操作CSS的API。它非常类似于DOM，但是用于CSS而不是HTML。它允许用户动态读取和修改CSS样式著作权归作者所有。
+CSSOM是一组允许JavaScript操作CSS的API。它非常类似于DOM，但是用于CSS而不是HTML。它允许用户动态读取和修改CSS样式。
 
 * Range
   表示一个包含节点与文本节点的一部分的文档片段
