@@ -84,7 +84,7 @@
     * 子类型
       子类型是一种类型多态的形式。这种形式下，子类型可以替换另一种相关的数据类型（超类型，英语：supertype）(也就是说，针对超类型元素进行操作的子程序、函数等程序元素，也可以操作相应的子类型。如果 S 是 T 的子类型，这种子类型关系通常写作 S <: T，意思是在任何需要使用 T 类型对象的环境中，都可以安全地使用 S 类型的对象。)
     * 泛型
-      描述不出来，看资料[协变与逆变](https://jkchao.github.io/typescript-book-chinese/tips/covarianceAndContravariance.html)
+      描述不出来,不怎么懂，看资料[协变与逆变](https://jkchao.github.io/typescript-book-chinese/tips/covarianceAndContravariance.html)
       * 协变
       * 逆变
 
@@ -99,3 +99,57 @@
     结构化，会有Function，Class，namespace的设计，把代码分成不同的块，同时进行复用
   * Program
     程序，借用第三方，辅助性设施管理代码，program，module，package等等更好管理语言的模块和安装，常见的有npm
+
+
+* 数据类型
+  Number，String，Boolean，Undefined，Null，Object，Symbol，BigInt
+
+* Number
+  * 表示
+    IEEE754 Double Float 双精度浮点数
+    * Sign 1 符号位（1代表负，0代表正），不参与任何数字的表示
+    * Exponent 11 指数位
+    * Franction  52 精度位
+
+  * 0.1 + 0.2 !== 0.3 三次转换，一次运算导致精度损失
+
+  * 语法
+    * 十进制
+      0-9
+      允许有小数
+      1e3 代表1 * 10的3次方
+    * 二进制
+      0-1
+      Ob开头
+    * 八进制
+      0-7
+      0o开头
+    * 十六进制
+      0-9 A-F
+      0x开头
+    
+          0.toString() // 报错 因为0.代表是合法的十进制，没法直接以取属性来表示
+          0 .toString() // ‘0’ 0空格代表的是数字，后面的点代表的是取属性
+
+  * String
+    * 定义
+      * character 字符  a
+      * code pointer 码点 97
+      * Encoding 编码 01100001
+    * 分类
+      * ASCII 127个字符 A-Z+a-z+0-9+各种制表符
+      * Unicode
+      * UCS
+      * GB 国内
+        * GB2312
+        * GBK
+        * GB18030
+      * ISO-8859 国外
+      * BIG5 台湾 
+    * Encoding 
+      * utf-8
+      * utf-16
+    * 语法
+      * 单引号 双引号
+        转义字符加\ 
+      * 反撇号
