@@ -186,6 +186,14 @@
     若当前对象没有想要的属性时，会沿着原型对象去找该属性，层层往上找，若没有则返回null
   * API
     * {},[],Object.defineProperty() 定义属性
-    * Object.create()/Object.setPropertyOf()/Object.getPropertyOf() 指定原型对象的方法
-    * new/class/extends 新语法
+    * Object.create()/Object.setPropertyOf()/Object.getPropertyOf() 指定原型的对象的方法
+    * new/class/extends 新语法，基于分类的方式
     * new /function/proptype  弃用
+  * JavaScript 标准里面所有具有特殊行为的对象
+    1. Array：Array 的 length 属性根据最大的下标自动发生变化。
+    2. Object.prototype：作为所有正常对象的默认原型，不能再给它设置原型了。
+    3. String：为了支持下标运算，String 的正整数属性访问会去字符串里查找。
+    4. Arguments：arguments 的非负整数型下标属性跟对应的变量联动。
+    5. 模块的 namespace对象：特殊的地方非常多，跟一般对象完全不一样，尽量只用于 import 吧。
+    6. 类型数组和数组缓冲区：跟内存块相关联，下标运算比较特殊。
+    7. bind 后的 function：跟原来的函数相关联。
