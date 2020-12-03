@@ -131,25 +131,61 @@
           0.toString() // 报错 因为0.代表是合法的十进制，没法直接以取属性来表示
           0 .toString() // ‘0’ 0空格代表的是数字，后面的点代表的是取属性
 
-  * String
-    * 定义
-      * character 字符  a
-      * code pointer 码点 97
-      * Encoding 编码 01100001
+* String
+  * 定义
+    * character 字符  a
+    * code pointer 码点 97
+    * Encoding 编码 01100001
+  * 分类
+    * ASCII 127个字符 A-Z+a-z+0-9+各种制表符
+    * Unicode
+    * UCS
+    * GB 国内
+      * GB2312
+      * GBK
+      * GB18030
+    * ISO-8859 国外
+    * BIG5 台湾 
+  * Encoding 
+    * utf-8
+    * utf-16
+  * 语法
+    * 单引号 双引号
+      转义字符加\ 
+    * 反撇号
+      在第一个反撇号前面可以加函数名的，代表作为一个语言，让这个函数去做一些解析和处理 
+  
+* Boolean
+
+* undefined
+  不是关键字
+  因为undefined可以作为一个变量的存在，不是很安全，可以是用 void 0，void true等等来表示undefined
+* Null
+  是关键字
+
+* Object
+  * 任意对象都是唯一，哪怕一模一样的，也是唯一的，他与本身的状态无关
+  * 面向对象的三要素：特性，状态，行为
+  * 类是一种常见的描述对象的方式
+    * 归类 
+      多继承
     * 分类
-      * ASCII 127个字符 A-Z+a-z+0-9+各种制表符
-      * Unicode
-      * UCS
-      * GB 国内
-        * GB2312
-        * GBK
-        * GB18030
-      * ISO-8859 国外
-      * BIG5 台湾 
-    * Encoding 
-      * utf-8
-      * utf-16
-    * 语法
-      * 单引号 双引号
-        转义字符加\ 
-      * 反撇号
+      分治，单继承结构
+
+  * 对象一般都只有属性和原型，函数方法也归为属性中 
+  * 对象的属性是kv的形式结构，属性名=>属性值,
+    * k有两种形式
+      * string 任何方式都可以获取到 
+      * Symbol 独一无二的特性，只能通过变量去引用
+    * 属性有两种
+      * Data Property 数据属性 一般来说描述状态
+        \[[value]] writable enumerable configurable
+      * Accessor Property 访问器 描述行为
+        get,set,enumerable
+  * 原型链
+    若当前对象没有想要的属性时，会沿着原型对象去找该属性，层层往上找，若没有则返回null
+  * API
+    * {},[],Object.defineProperty() 定义属性
+    * Object.create()/Object.setPropertyOf()/Object.getPropertyOf() 指定原型对象的方法
+    * new/class/extends 新语法
+    * new /function/proptype  弃用
