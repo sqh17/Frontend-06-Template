@@ -22,10 +22,26 @@ class Request{
   send(){
     return new Promise((resolve,reject)=>{
       // ……
+      let repsonse = new ResponseParser;
+      resolve("")
     })
   }
 }
 
+
+class ResponseParser{
+  constructor(){
+
+  }
+  receive(string){
+    for(let i = 0;i<string.length;i++){
+      this.receiveChar(string.charAt(i))
+    }
+  }
+  receiveChar(char){
+
+  }
+}
 
 
 void async function (){
