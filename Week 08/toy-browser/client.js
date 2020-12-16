@@ -60,7 +60,38 @@ ${this.bodyText}`
 
 class ResponseParser{
   constructor(){
+    // method http/1.1 status line
+    this.WAITING_STATUS_LINE = 0;
+    this.WAITING_STATUS_LINE_END = 1;
+    // header
+    this.WAITING_HEADER_NAME = 2;
+    this.WAITING_HEADER_SPACE = 3;
+    this.WAITING_HEADER_VALUE = 4;
+    this.WAITING_HEADER_LINE_END = 5;
+    // header后的空行
+    this.WAITING_HEADER_BLOCK_END = 6;
+    // body
+    this.WAITING_BODY = 7;
 
+    this.current = this.WAITING_STATUS_LINE;
+    this.statusLine = "";
+    this.header = {};
+    this.headerName = "";
+    this.headerValue = "";
+    this.bodyPaser = null;
+  }
+  get isFinished(){
+    return this.bodyPaser && this.bodyPaser.isFinished;
+  }
+  get response(){
+    this.statusLine.match(/HTTP\/1.1 ([0-9]+) ([\s\S]+)/)
+    return {
+      statusCode: RegExp.$1,
+      statusText:RegExp.$2,
+      headers:JSON.stringify(this.header),
+      body:this.bodyPaser.content.join('')
+    }
+    
   }
   receive(string){
     for(let i = 0;i<string.length;i++){
@@ -68,7 +99,97 @@ class ResponseParser{
     }
   }
   receiveChar(char){
+    if(this.current === this.WAITING_STATUS_LINE){
+      if(char === '\r'){
+        this.current = this.WAITING_STATUS_LINE_END
+      }else{
+        this.statusLine += char
+      }
+    }else if(this.current === this.WAITING_STATUS_LINE_END){
+      if(char === '\n'){
+        this.current = this.WAITING_HEADER_NAME
+      }
+    }else if(this.current === this.WAITING_HEADER_NAME){
+      if(char === ':'){
+        this.current = this.WAITING_HEADER_SPACE
+      }else if(char === '\r'){
+        this.current = this.WAITING_HEADER_BLOCK_END
+        if(this.header['Transfer-Encoding'] === 'chunked'){ // node默认值
+          this.bodyPaser = new TrunkedBodyParser();
+        }
+      }else{
+        this.headerName += char
+      }
+    }else if(this.current === this.WAITING_HEADER_SPACE){
+      if(char === ' '){
+        this.current = this.WAITING_HEADER_VALUE
+      }
+    }else if(this.current === this.WAITING_HEADER_VALUE){
+      if(char === '\r'){
+        this.current = this.WAITING_HEADER_LINE_END
+        this.header[this.headerName] = this.headerValue
+        this.headerName = ''
+        this.headerValue = ''
+      }else{
+        this.headerValue += char
+      }
+    }else if(this.current === this.WAITING_HEADER_LINE_END){
+      if(char === '\n'){
+        this.current = this.WAITING_HEADER_NAME
+      }
+    }else if(this.current === this.WAITING_HEADER_BLOCK_END){
+      if(char === '\n'){
+        this.current = this.WAITING_BODY
+      }
+    }else if(this.current === this.WAITING_BODY){
+      this.bodyPaser.receiveChar(char)
+    }
+  }
+}
 
+class TrunkedBodyParser{
+  constructor(){
+    this.WAITING_LENGTH = 0;
+    this.WAITING_LENGTH_LINE_END = 1;
+    this.READING_TRUNK = 2;
+    this.WAITING_NEW_LINE = 3;
+    this.WAITING_NEW_LINE_END = 4;
+    
+    this.length = 0;
+    this.content = [];
+    this.isFinished = false;
+    this.current = this.WAITING_LENGTH;
+  }
+  receiveChar(char){
+    if(this.current === this.WAITING_LENGTH){
+      if(char === '\r'){
+        if(this.length === 0){
+          this.isFinished = true
+        }
+        this.current = this.WAITING_LENGTH_LINE_END
+      }else{
+        this.length *= 16;// 16进制
+        this.length += parseInt(char,16)
+      }
+    }else if(this.current === this.WAITING_LENGTH_LINE_END){
+      if(char === '\n'){
+        this.current = this.READING_TRUNK
+      }
+    }else if(this.current === this.READING_TRUNK){
+      this.content.push(char)
+      this.length --;
+      if(this.length === 0){
+        this.current = this.WAITING_NEW_LINE
+      }
+    }else if(this.current === this.WAITING_NEW_LINE){
+      if(char === '\r'){
+        this.current = this.WAITING_NEW_LINE_END
+      }
+    }else if(this.current === this.WAITING_NEW_LINE_END){
+      if(char === '\n'){
+        this.current = this.WAITING_LENGTH
+      }
+    }
   }
 }
 
