@@ -36,7 +36,7 @@ class Request{
       }
       connection.on('data',data=>{
         console.log(data.toString());
-        parser.receive(data.toString());
+         parser.receive(data.toString());
         if(parser.isFinished){
           resolve(parser.response);
           connection.end()
