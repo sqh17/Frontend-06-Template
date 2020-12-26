@@ -164,6 +164,43 @@
       * 如果匹配成功，element 和 selecotr 都向外层延申并尝试匹配
       * 如果匹配到最外城仍然成功，证明 element 和 selector 完全匹配
 
+* 第十三步 css计算 - 生成 computed 属性
+  1. 一旦选择匹配，就应用选择器到元素上，形成 computedStyle
+
+          // 匹配到 #myid 时的属性
+          element = {
+              attributes: [
+                  {name: 'id', value; 'myid'},
+                  {name: 'isSelfClosing', value: true},
+              ],
+              children: [],
+              computedStyle: {
+                  bakcground-color: {value: '#ff5000'},
+                  width: {value: '100px'},
+              },
+              tagName: 'img',
+              type: 'element',
+          }
+          // 匹配到 img 时的属性，cumputedStyle 被覆盖了
+          element = {
+              attributes: [
+                  {name: 'id', value; 'myid'},
+                  {name: 'isSelfClosing', value: true},
+              ],
+              children: [],
+              computedStyle: {
+                  bakcground-color: {value: '#ff1111'},
+                  width: {value: '30px'},
+              },
+              tagName: 'img',
+              type: 'element',
+          }
+
+* 第十四步 css计算 - specificity的计算逻辑
+  1. css规则是根据specificity和后来优先规则覆盖
+  2. specificity是四元组，越往左优先级越高
+  3. 一个css规则的specificity根据包含的简单选择器相加而成
+
 * module exports 与 exports
   require导出的内容是module.exports的指向的内存块内容，并不是exports的。
   简而言之，区分他们之间的区别就是 exports 只是 module.exports的引用，辅助后者添加内容用的
