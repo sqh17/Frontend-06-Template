@@ -4,8 +4,61 @@ const EOF = Symbol('EOF')
 let currentToken = null; // 标签
 let currentAttribute = null; // 属性
 
+let stack = [{type: 'document', children: []}];
+let currentTextNode = null;
 function emit(token){
-  console.log(token)
+  // 栈顶
+  let top = stack[stack.length - 1];
+  if (token.type === 'startTag') {
+    let element = {
+      type: 'element',
+      children: [],
+      attributes: [],
+    };
+
+    element.tagName = token.tagName;
+
+    for (let p in token) {
+      if (p !== 'type' && p !== 'tagName') {
+        element.attributes.push({
+          name: p,
+          value: token[p],
+        });
+      }
+
+    }
+
+    // 入栈前添加 parent & children 关系，对偶操作
+    top.children.push(element);
+    // element.parent = top;
+
+    // 自封闭元素被添加对偶关系后不需要入栈，因为没有封闭标签给它出栈
+    if(!token.isSelfClosing)
+      // 非自封闭元素需要入栈
+      stack.push(element);
+    
+    currentTextNode = null;
+      
+  } else if (token.type === 'endTag') {
+    if (top.tagName !== token.tagName) {
+      throw new Error("Tag start end dosen't match");
+    } else {
+      // 找到了对应的关闭标签，就从栈顶取出
+      stack.pop();
+    }
+    currentTextNode = null;
+  } else if (token.type === 'text') {
+    if (currentTextNode === null) {
+      currentTextNode = {
+        type: 'text',
+        content: '',
+      };
+      // 在遇到新的文本时，创捷文本节点，并作为 children 添加给栈顶
+      top.children.push(currentTextNode);
+    }
+    // 如果是连续的文本节点，就连接在一起
+    currentTextNode.content += token.content;
+  }
 }
 
 function data(c){
