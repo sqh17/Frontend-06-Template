@@ -14,6 +14,12 @@ function addCSSRules(text) {
     rules.push(...ast.stylesheet.rules);
 }
 
+function computeCSS(element) {
+  // slice 没有参数的时候就是复制一遍 array
+  // 标签匹配是从当前元素往外匹配，所以要进行 reverse
+  let elements = stack.slice().reverse();
+}
+
 function emit(token){
   // 栈顶
   let top = stack[stack.length - 1];
@@ -35,7 +41,8 @@ function emit(token){
       }
 
     }
-
+    // starTag 入栈时，计算 CSS 样式
+    computeCSS(element)
     // 入栈前添加 parent & children 关系，对偶操作
     top.children.push(element);
     // element.parent = top;
