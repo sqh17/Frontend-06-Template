@@ -14,10 +14,63 @@ function addCSSRules(text) {
     rules.push(...ast.stylesheet.rules);
 }
 
+function match(element, selector) {
+  if (!selector || !element.attributes)
+    return false;
+
+  if (selector.charAt(0) === '#') {
+    let attr = element.attributes.filter(attr => attr.name === 'id')[0];
+    if (attr && attr.value === selector.replace('#', ''))
+      return true;
+  } else if (selector.charAt(0) === '.') {
+    let attr = element.attributes.filter(attr => attr.name === 'class')[0];
+    if (attr && attr.value === selector.replace('.', ''))
+      return true;
+  } else {
+    if (element.tagName === selector) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 function computeCSS(element) {
   // slice 没有参数的时候就是复制一遍 array
   // 标签匹配是从当前元素往外匹配，所以要进行 reverse
   let elements = stack.slice().reverse();
+  for(let rule of rules) {
+    // rule.selector[0]: "body div #myid"
+    // 为了和 elements 顺序一致，选择器也执行一次 reverse
+    let selectorParts = rule.selectors[0].split(' ').reverse();
+    if (!element.computedStyle)
+        element.computedStyle = {};
+    if(!match(element, selectorParts[0]))
+        continue;
+
+    let matched = false;
+
+    // j 表示当前选择器的位置
+    let j = 1;
+    // i 表示当前元素的位置
+    for(let i = 0; i < elements.length; i++) {
+        /**
+         * element[0] 为刚入栈的元素，它要与 #myid 和 img 分别进行匹配
+         * 如果匹配成功，elemnt 和 selecotr 都向外层延申并尝试匹配
+         */
+        if(match(elements[i], selectorParts[j])) {
+            // 元素能够匹配选择器时，j 自增，去匹配 j 外层的选择器
+            j++;
+        }
+    }
+    // 如果所有的选择器都匹配到了，就认为只 matched
+    if (j >= selectorParts.length)
+        matched = true;
+
+    if (matched) {
+
+    }
+  }
 }
 
 function emit(token){
