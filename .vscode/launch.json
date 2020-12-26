@@ -8,6 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "启动程序",
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/Week 09/toy-browser/client.js"
     }
   ]
