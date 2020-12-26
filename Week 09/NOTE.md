@@ -14,7 +14,7 @@
   2. 暂时忽略属性
 
 * 第四步 创建元素
-  1. 加入业务逻辑
+  1. 加入业务逻辑 (创建 token，把字符添加倒 token 上，emit token)
   2. 在标签结束状态时提交标签token
 
 * 第五步 处理属性
@@ -27,6 +27,124 @@
   2. 遇到开始标签就入栈，结束标签就出栈
   3. 自封闭表视为入栈再出栈
   4. 任何元素的父元素既是它入栈前的栈顶
+
+* 第七步 文本节点添加到dom树中
+  1. 文本节点于自封闭标签方式一致
+  2. 多个文本节点需要合并
+
+* 第八步 css计算 - 收集规则
+  1. 遇到 style 标签时，把 CSS 规则保存起来
+  2. 调用 CSS Parser 来分析 CSS 规则
+  3. 必须自己研究词库分析 CSS 规则的格式
+
+          // AST
+          {
+            "type": "stylesheet",
+            "stylesheet": {
+              "rules": [
+                {
+                  "type": "rule",
+                  "selectors": [
+                    "body div #myid"
+                  ],
+                  "declarations": [
+                    {
+                        "type": "declaration",
+                        "property": "width",
+                        "value": "100px",
+                        "position": {
+                            "start": {
+                                "line": 3,
+                                "column": 3
+                            },
+                            "end": {
+                                "line": 3,
+                                "column": 14
+                            }
+                        }
+                    },
+                    {
+                        "type": "declaration",
+                        "property": "background-color",
+                        "value": "#ff5000",
+                        "position": {
+                            "start": {
+                                "line": 4,
+                                "column": 3
+                            },
+                            "end": {
+                                "line": 4,
+                                "column": 28
+                            }
+                        }
+                    }
+                ],
+                "position": {
+                    "start": {
+                        "line": 2,
+                        "column": 1
+                    },
+                    "end": {
+                        "line": 5,
+                        "column": 2
+                    }
+                }
+            },
+            {
+                "type": "rule",
+                "selectors": [
+                    "body div img"
+                ],
+                "declarations": [
+                    {
+                        "type": "declaration",
+                        "property": "width",
+                        "value": "30px",
+                        "position": {
+                            "start": {
+                                "line": 7,
+                                "column": 3
+                            },
+                            "end": {
+                                "line": 7,
+                                "column": 13
+                            }
+                        }
+                    },
+                    {
+                        "type": "declaration",
+                        "property": "background-color",
+                        "value": "#ff1111",
+                        "position": {
+                            "start": {
+                                "line": 8,
+                                "column": 3
+                            },
+                            "end": {
+                                "line": 8,
+                                "column": 28
+                            }
+                        }
+                    }
+                ],
+                "position": {
+                    "start": {
+                        "line": 6,
+                        "column": 1
+                    },
+                    "end": {
+                        "line": 9,
+                        "column": 2
+                    }
+                  }
+                }
+              ],
+              "parsingErrors": []
+            }
+          }
+
+* 第九步 css计算 - css调用
+
 
 * module exports 与 exports
   require导出的内容是module.exports的指向的内存块内容，并不是exports的。

@@ -1,4 +1,4 @@
-
+const css = require('css');
 const EOF = Symbol('EOF')
 
 let currentToken = null; // 标签
@@ -6,6 +6,14 @@ let currentAttribute = null; // 属性
 
 let stack = [{type: 'document', children: []}];
 let currentTextNode = null;
+
+// 加入一个新的函数, addCSSRules, 把 CSS 规则暂存到一个数组里
+let rules = [];
+function addCSSRules(text) {
+    var ast = css.parse(text);
+    rules.push(...ast.stylesheet.rules);
+}
+
 function emit(token){
   // 栈顶
   let top = stack[stack.length - 1];
@@ -43,6 +51,10 @@ function emit(token){
     if (top.tagName !== token.tagName) {
       throw new Error("Tag start end dosen't match");
     } else {
+      // 遇到 style 标签时，执行添加 CSS 规则的操作
+      if (top.tagName === 'style') {
+          addCSSRules(top.children[0].content);
+      }
       // 找到了对应的关闭标签，就从栈顶取出
       stack.pop();
     }
@@ -293,5 +305,8 @@ module.exports.parserHTML = function parserHTML(html){
   for(let i of html){
     state = state(i)
   }
-  state = state(EOF)
+  // 文本结束时可能没有结束符，所以在这里给定一个结束符。
+  // 这里的结束符不能有任何意义，所以用来 Symbol
+  state = state(EOF);
+  return stack;
 } 
