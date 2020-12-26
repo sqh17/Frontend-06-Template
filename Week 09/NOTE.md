@@ -13,7 +13,10 @@
   1. 主要的标签有三种，开始标签，自封闭标签，结束标签
   2. 暂时忽略属性
 
-* 
+* 第四步 
+  1. 加入业务逻辑
+  2. 在标签结束状态时提交标签token
+
 
 * module exports 与 exports
   require导出的内容是module.exports的指向的内存块内容，并不是exports的。
