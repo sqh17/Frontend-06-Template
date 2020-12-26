@@ -1,16 +1,19 @@
 学习笔记
 
-* 第一步
+* 第一步 文件拆分
   1. 为了方便管理，把parser单独拆到文件中
   2. parser接受html文本作为参数，返回一个DOM树
 
-* 第二步
+* 第二步 用FSM实现HTML的分析
   1. 使用FSM（有限状态机）实现html的分析
   2. 在html标准中，已经规定了html的状态（80种），省去了设计状态机的方式
   3. 简化toy-browser
 
-* 第三步
+* 第三步 解析标签
+  1. 主要的标签有三种，开始标签，自封闭标签，结束标签
+  2. 暂时忽略属性
 
+* 
 
 * module exports 与 exports
   require导出的内容是module.exports的指向的内存块内容，并不是exports的。

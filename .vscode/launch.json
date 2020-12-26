@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "启动程序",
-      "program": "${workspaceFolder}/Week 08/toy-browser/client.js"
+      "program": "${workspaceFolder}/Week 09/toy-browser/client.js"
     }
   ]
 }

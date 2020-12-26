@@ -74,7 +74,7 @@ class ResponseParser{
     this.WAITING_BODY = 7;
 
     this.current = this.WAITING_STATUS_LINE;
-    this.statusLine = "";
+    this.statusLine = ""; // 状态线 GET 
     this.header = {};
     this.headerName = "";
     this.headerValue = "";
@@ -167,7 +167,8 @@ class TrunkedBodyParser{
           this.isFinished = true
         }
         this.current = this.WAITING_LENGTH_LINE_END
-      }else{
+      }else{ 
+        // ？？？？？？再回看视频解释
         this.length *= 16;// 16进制
         this.length += parseInt(char,16)
       }
