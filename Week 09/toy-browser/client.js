@@ -268,7 +268,7 @@ void async function () {
     let response = await request.send();
 
     // 真正的浏览器里，html 是被逐段的取回解析的。为了理解方便，这里一次处理所有 body 内容
-    let dom = parser.parseHTML(response.body);
+    let dom = parser.parserHTML(response.body);
 
     console.log('dom:');
     console.log(JSON.stringify(dom, null, '    '));

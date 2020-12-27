@@ -63,12 +63,15 @@ function computeCSS(element) {
   // slice 没有参数的时候就是复制一遍 array
   // 标签匹配是从当前元素往外匹配，所以要进行 reverse
   let elements = stack.slice().reverse();
+
+  if (!element.computedStyle)
+    element.computedStyle = {};
+
   for(let rule of rules) {
     // rule.selector[0]: "body div #myid"
     // 为了和 elements 顺序一致，选择器也执行一次 reverse
     let selectorParts = rule.selectors[0].split(' ').reverse();
-    if (!element.computedStyle)
-        element.computedStyle = {};
+
     if(!match(element, selectorParts[0]))
         continue;
 
@@ -78,10 +81,7 @@ function computeCSS(element) {
     let j = 1;
     // i 表示当前元素的位置
     for(let i = 0; i < elements.length; i++) {
-        /**
-         * element[0] 为刚入栈的元素，它要与 #myid 和 img 分别进行匹配
-         * 如果匹配成功，elemnt 和 selecotr 都向外层延申并尝试匹配
-         */
+        // element[i] 为刚入栈的元素，它要与 #myid 和 img 分别进行匹配 如果匹配成功，elemnt 和 selecotr 都向外层延申并尝试匹配
         if(match(elements[i], selectorParts[j])) {
             // 元素能够匹配选择器时，j 自增，去匹配 j 外层的选择器
             j++;
@@ -91,34 +91,31 @@ function computeCSS(element) {
     if (j >= selectorParts.length)
       matched = true;
 
-      if (matched) {
-        // 如果匹配到，加入样式
-        let sp = specificity(rule.selectors[0]);
-        let computedStyle = element.computedStyle;
-        for(let declaration of rule.declarations) {
-            if(!computedStyle[declaration.property])
-                computedStyle[declaration.property] = {};
+    if (matched) {
+      // 如果匹配到，加入样式
+      let sp = specificity(rule.selectors[0]);
+      let computedStyle = element.computedStyle;
+      for(let declaration of rule.declarations) {
+          if(!computedStyle[declaration.property])
+              computedStyle[declaration.property] = {};
 
-            // 如果还没有 computedStyle 添加属性和值
-            if (!computedStyle[declaration.property].specificity) {
-                computedStyle[declaration.property].value = declaration.value;
-                console.log('computedStyle[declaration.property].value: ', computedStyle[declaration.property].value);
-                computedStyle[declaration.property].specificity = sp;
-            // 如果已经有 computedStyle，但新的 specificity 更大，覆盖之前的值
-            } else if (compare(computedStyle[declaration.property].specificity, sp) < 0) {
-                computedStyle[declaration.property].value = declaration.value;
-                computedStyle[declaration.property].specificity = sp;
-            }
-        }
-        // console.log('element: ', element, 'matched rule', rule);
-        console.log('element.computedStyle: ', element.computedStyle);
+          // 如果还没有 computedStyle 添加属性和值
+          if (!computedStyle[declaration.property].specificity) {
+              computedStyle[declaration.property].value = declaration.value;
+              computedStyle[declaration.property].specificity = sp;
+          // 如果已经有 computedStyle，但新的 specificity 更大，覆盖之前的值
+          } else if (compare(computedStyle[declaration.property].specificity, sp) < 0) {
+              computedStyle[declaration.property].value = declaration.value;
+              computedStyle[declaration.property].specificity = sp;
+          }
+      }
+      console.log('element.computedStyle: ', element.computedStyle);
     }
   }
 }
 
 function emit(token){
-  // 栈顶
-  let top = stack[stack.length - 1];
+  let top = stack[stack.length - 1];// 栈顶
   if (token.type === 'startTag') {
     let element = {
       type: 'element',
@@ -141,7 +138,6 @@ function emit(token){
     computeCSS(element)
     // 入栈前添加 parent & children 关系，对偶操作
     top.children.push(element);
-    // element.parent = top;
 
     // 自封闭元素被添加对偶关系后不需要入栈，因为没有封闭标签给它出栈
     if(!token.isSelfClosing)
@@ -227,10 +223,10 @@ function endTagOpen(c){
 }
 
 function tagName(c){
-  if(c === /^[\n\t\f ]$/){ // 遇到tab，换行，禁止，空白
+  if(c.match(/^[\n\t\f ]$/)){ // 遇到tab，换行，禁止，空白
     return beforeAttributeName
   }else if(c === '/'){
-    return selfCloseStarting
+    return selfCloseStartingTag
   }
   // 不能注释掉这段，因为只能判断有标签才能做下一步操作，比如currentToken.tagName
   else if(c.match(/^[a-zA-Z]$/)){
@@ -284,7 +280,7 @@ function afterAttributeName(c) {
   if (c.match(/^\t\n\f ]$/)) {
       return afterAttributeName;
   } else if (c === '/') {
-      return selfClosingStartTag;
+      return selfCloseStartingTag;
   }  else if (c === '=') {
       return beforeAttributeValue;
   } else if (c === '>') {
