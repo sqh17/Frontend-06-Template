@@ -158,8 +158,89 @@ function layout(element){
     }
   }
   flexLine.mainSpace = mainSpace;
+  // 保存交叉轴的剩余空间
+  if(style.flexWrap === 'nowrap' || isAutoMainSize){
+    flexLine.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] : crossSpace
+  }else{
+    flexLine.crossSpace = crossSpace;
+  }
 
-  console.log(items)
+  if(mainSpace < 0){ // 对所有元素进行等比压缩 // 单行的情况下
+    var scale = style[mainSize] / (style[mainSize] - mainSpace); // 主轴的尺寸 / 主轴的尺寸加上剩余空间的尺寸
+    var currentMain = mainBase; // 当前的位置
+    for(var i = 0;i<items.length;i++){
+      var item = items[i];
+      var itemStyle = getStyle(item);
+
+      if(itemStyle.flex){ // 若是flex，这设置宽为0
+        itemStyle[mainSize] = 0;
+      }
+
+      itemStyle[mainSize] = itemStyle[mianSize] * scale; // 设置该元素的宽度
+
+      itemStyle[mainStart] = currentMain; // 设置该元素的left位置
+      itemStyle[mianEnd] = itemStyle[mainStart] + mainSign * itemStyle[mianSize]; // 设置该元素的right位置，mainSign为了考虑反向
+      currentMain = itemStyle[mainEnd] // 方便下一个元素的位置
+    }
+  }else{ // 多行的情况下
+    flexLines.forEach(items=>{
+      var mainSpace = items.mainSpace;
+      var flexTotal = 0; // 记录所有元素的flex值之和
+      for(var i = 0;i < items.length;i++){
+        var item = items[i];
+        var itemStyle = getStyle(item);
+        if((itemStyle.flex !== null) && (itemStyle.flex !== (void 0))){
+          flexTotal += itemStyle.flex;
+          continue
+        }
+      }
+      if(flexTotal > 0){ // 有flex，会永远占满一行
+        var currentMain = mainBase;
+        for(var i = 0;i<items.length;i++){
+          var item = items[i];
+          var itemStyle = getStyle(item);
+
+          if(itemStyle.flex){
+            itemStyle[mainSize] = (mainSpace / flexTotal) * itemStyle.flex; // 等比划分
+          }
+
+          itemStyle[mainStart] = currentMain;
+          itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
+          currentMain = itemStyle[mainEnd];
+        }
+      }else { // 如果没有flex，那么就按照justify-content情况去划分
+        if(style.justifyContent === 'flex-start'){ 
+          var currentMain = mainBase;// 从左开始
+          var step = 0 // 等比的几块
+        }
+        if(style.justifyContent === 'flex-end'){
+          var currentMain = mainSpace * mainSign +  mainBase; // 从右开始
+          var step = 0
+        }
+        if(style.justifyContent === 'center'){
+          var currentMain = mainSpace / 2 * mainSign + mainBase;
+          var step = 0
+        }
+        if(style.justifyContent === 'space-between'){
+          var step = mainSpace / (item.length - 1) * mainSign;
+          var currentMain = mainBase;
+        }
+        if(style.justifyContent === 'space-around'){
+          var step = mainSpace / item.length * mainSign;
+          var currentMain = step / 2 + mainBase;
+        }
+
+        for(var i = 0;i<item.length;i++){
+          var item = items[i];
+          var itemStyle = getStyle(item);
+          itemStyle[mainStart] = currentMain;
+          itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize];
+          currentMain = itemStyle[mainEnd] + step;
+        }
+      }
+    })
+  }
+
 }
 
 
