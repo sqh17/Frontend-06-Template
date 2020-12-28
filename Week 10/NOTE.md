@@ -23,3 +23,14 @@
   3. 大于0时，多行的情况下，用flexTotal记录之和
     1. flexTotal>0时，代表有flex，等比划分
     2. flexTotal<0时，用justify-content去设置
+
+* 第四步 计算交叉轴
+	1. 根据每一行中最大元素尺寸计算杭高
+	2. 根据杭高flex-align和align-items，确定元素的具体位置
+	`步骤`
+	1. 计算交叉轴剩余的空间crossSpace
+	2. 根据wrap-reserve决定crossBase的初始值
+	3. 根据alignContent的值，决定crossBase的值（选alignContent而不选alignItems的理由是align-content 只适用多行的flex容器（也就是flex容器中的子项不止一行时该属性才有效果），它的作用是当flex容器在交叉轴上有多余的空间时，将子项作为一个整体（属性值为：flex-start、flex-end、center时）进行对齐）
+	4. 循环每一行的交叉轴，计算出每一行上的高度，位置
+
+  

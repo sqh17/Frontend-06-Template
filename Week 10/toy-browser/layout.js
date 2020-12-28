@@ -28,8 +28,8 @@ function layout(element){
   if(!style.flexDirection || style.flexDirection === 'auto'){
     style.flexDirection = 'row'
   }
-  if(!style.alignItem || style.alignItem === 'auto'){
-    style.alignItem = 'stretch'
+  if(!style.alignItems || style.alignItems === 'auto'){
+    style.alignItems = 'stretch'
   }
   if(!style.justifyContent || style.justifyContent === 'auto'){
     style.justifyContent = 'flex-start'
@@ -241,7 +241,8 @@ function layout(element){
     })
   }
 
-  var crossSpace; // 判断是否把父容器剩余空间
+
+  // 计算交叉轴
   if(!style[crossSize]){ // 若父元素没有高度
     crossSpace = 0; // 代表已经被子元素撑满
     elementStyle[crossSize] = 0;
@@ -286,7 +287,7 @@ function layout(element){
     step = crossSpace / (flexLines.length);
     crossBase += crossSign * step / 2
   }
-  if(style.alignContent === 'stretch'){
+  if(style.alignContent === 'stretch'){ // 默认值
     crossBase += 0;
     step = 0;
   }
@@ -296,8 +297,8 @@ function layout(element){
       var item = items[i];
       var itemStyle = getStyle(item);
 
-      var align = itemStyle.alignSelf || item.alignItems;
-      if(item === null){
+      var align = itemStyle.alignSelf || style.alignItems; // algin是受本身的align-self或者父元素的align-items的影响的，前者优先级高于后者
+      if(itemStyle[crossSize] === null){// 若没有制定交叉轴
         itemStyle[crossSize] = (align === 'stretch') ? lineCrossSize : 0;
       }
       if(align === 'flex-start'){
@@ -314,13 +315,14 @@ function layout(element){
       } 
       if(align === 'stretch'){
         itemStyle[crossStart] = crossBase;
-        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)));
+        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)) ? itemStyle[crossSize] : lineCrossSize);
 
         itemStyle[crossSize] = crossSign * (itemStyle[crossEnd] - itemStyle[crossStart])
       } 
     }
-    crossBase += crossSign * (lineCrossSize + step)
+    crossBase += crossSign * (lineCrossSize + step) // 每一个循环都要记录一下crossbase
   })
+  console.log(items);
 }
 
 
