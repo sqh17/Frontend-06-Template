@@ -241,6 +241,86 @@ function layout(element){
     })
   }
 
+  var crossSpace; // 判断是否把父容器剩余空间
+  if(!style[crossSize]){ // 若父元素没有高度
+    crossSpace = 0; // 代表已经被子元素撑满
+    elementStyle[crossSize] = 0;
+    for(var i = 0;i<flexLines.length;i++){
+      elementStyle[crossSize] = elementStyle[crossSize] + flexLines[i].crossSpace // 则由子容器撑开
+    }
+  }else{
+    crossSpace = style[crossSize] 
+    for(var i = 0;i<flexLines.length;i++){
+      crossSpace -= flexLines[i].crossSpace; // 获取剩余的父容器高度
+    }
+  }
+
+  // 根据flexWrap去设置从哪头指向哪头
+  if(style.flexWrap === 'wrap-reverse'){
+    crossBase = style[crossSize]
+  }else{
+    crossBase = 0;
+  }
+
+  var lineSize = style[crossSize] / flexLines.length; // 计算一行的高度
+
+  var step;
+
+  if(style.alignContent === 'flex-start'){
+    crossBase += 0;
+    step = 0;
+  }
+  if(style.alignContent === 'flex-end'){
+    crossBase += crossSign * crossSpace;
+    step = 0;
+  }
+  if(style.alignContent === 'center'){
+    crossBase += crossSign * crossSpace / 2;
+    step = 0;
+  }
+  if(style.alignContent === 'space-between'){
+    crossBase += 0;
+    step = crossSpace / (flexLines.length - 1);
+  }
+  if(style.alignContent === 'space-around'){
+    step = crossSpace / (flexLines.length);
+    crossBase += crossSign * step / 2
+  }
+  if(style.alignContent === 'stretch'){
+    crossBase += 0;
+    step = 0;
+  }
+  flexLines.forEach(items=>{
+    var lineCrossSize = style.alignContent === 'stretch' ? items.crossSpace + crossSpace / flexLines.length : items.crossSpace;// 真实交叉轴的尺寸
+    for(var i = 0;i<items.length;i++){
+      var item = items[i];
+      var itemStyle = getStyle(item);
+
+      var align = itemStyle.alignSelf || item.alignItems;
+      if(item === null){
+        itemStyle[crossSize] = (align === 'stretch') ? lineCrossSize : 0;
+      }
+      if(align === 'flex-start'){
+        itemStyle[crossStart] = crossBase;
+        itemStyle[crossEnd] = itemStyle[crossStart] + crossSign * itemStyle[crossSize];
+      }
+      if(align === 'flex-end'){
+        itemStyle[crossEnd] = crossBase + crossSign * lineCrossSize;
+        itemStyle[crossStart] = itemStyle[crossEnd] - crossSign * itemStyle[crossSize];
+      } 
+      if(align === 'center'){
+        itemStyle[crossStart] = crossBase + crossSign * (lineCrossSize - itemStyle[crossSize]) / 2;
+        itemStyle[crossEnd] = itemStyle[crossStart] + crossSign * itemStyle[crossSize];
+      } 
+      if(align === 'stretch'){
+        itemStyle[crossStart] = crossBase;
+        itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)));
+
+        itemStyle[crossSize] = crossSign * (itemStyle[crossEnd] - itemStyle[crossStart])
+      } 
+    }
+    crossBase += crossSign * (lineCrossSize + step)
+  })
 }
 
 
