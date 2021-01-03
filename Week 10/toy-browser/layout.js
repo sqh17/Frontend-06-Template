@@ -9,16 +9,18 @@ function layout(element){
   if(elementStyle.display !== 'flex')
     return
   
-  // 收集只有element的元素
+  // 收集只有element的元素(过滤文本节点)
   var items = element.children.filter(e => e.type === 'element');
   
+
+  //  支持order属性
   items.sort((a,b)=>{
     return (a.order || 0) - (b.order || 0)
   })
 
   var style = elementStyle; 
 
-
+  // 初始化 没有规定的 width 和 height 都先定义为 null, 方便代码同一判断
   ['width','height'].forEach(i=>{
     if(style[i] === 'auto' || style[i] === ''){
       style[i] = null
@@ -41,6 +43,7 @@ function layout(element){
     style.alignContent = 'stretch'
   }
 
+  // 用抽象的属性变量，代替直接的属性
   var mainSize, mainStart, mainEnd, mainSign, mainBase, // 主轴
       crossSize, crossStart, crossEnd, crossSign, crossBase; // 交叉轴 
 
@@ -109,7 +112,9 @@ function layout(element){
     elementStyle[mainSize] = 0;
     for(var i = 0;i < items.length; i++){
       var item = items[i];
-      elementStyle[mainSize] = elementStyle[mainSize] + item[mainSize] // 父元素的空间由子元素撑开
+      var itemStyle = getStyle(item);
+      if(itemStyle[mainSize] !== null || itemStyle[mainSize] !== (void 0))
+        elementStyle[mainSize] = elementStyle[mainSize] + item[mainSize] // 父元素的空间由子元素撑开
     }
     isAutoMainSize = true;
   }
@@ -154,10 +159,10 @@ function layout(element){
       if(itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0)){
         crossSpace = Math.max(crossSpace,itemStyle[crossSize]); // 记录循环每次的最大行高,交叉轴
       }
-      mainSpace -= itemStyle[mainSize];
+      mainSpace -= itemStyle[mainSize]; // 从剩余空间中剪掉当前元素的大小
     }
   }
-  flexLine.mainSpace = mainSpace;
+  flexLine.mainSpace = mainSpace; // 最后一行的情况：没有元素
   // 保存交叉轴的剩余空间
   if(style.flexWrap === 'nowrap' || isAutoMainSize){
     flexLine.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] : crossSpace
@@ -243,6 +248,7 @@ function layout(element){
 
 
   // 计算交叉轴
+  // 如果没有定义容器的高，空隙为0，元素的高为 元素高 + 行空隙
   if(!style[crossSize]){ // 若父元素没有高度
     crossSpace = 0; // 代表已经被子元素撑满
     elementStyle[crossSize] = 0;
@@ -250,6 +256,7 @@ function layout(element){
       elementStyle[crossSize] = elementStyle[crossSize] + flexLines[i].crossSpace // 则由子容器撑开
     }
   }else{
+    // 如果定义了行高，用总的高度依次减去行的空隙，得到剩余的行高
     crossSpace = style[crossSize] 
     for(var i = 0;i<flexLines.length;i++){
       crossSpace -= flexLines[i].crossSpace; // 获取剩余的父容器高度
@@ -263,7 +270,7 @@ function layout(element){
     crossBase = 0;
   }
 
-  var lineSize = style[crossSize] / flexLines.length; // 计算一行的高度
+  var lineSize = style[crossSize] / flexLines.length; // 计算一行的高度 ？？？？？？
 
   var step;
 

@@ -4,7 +4,7 @@
   1. 拆分
   2. 将有数值的字符串转化为对应的数字
   3. 由于toy-broswer只通过flex去设置排版
-  4. 收集dom树中的element的元素(排序？？？)
+  4. 收集dom树中的element的元素
   5. 设置flex相关的默认值(mainSign,mainBase 标记，和距离，便于相加相减)
 
 * 第二步 收集元素进行
@@ -33,4 +33,13 @@
 	3. 根据alignContent的值，决定crossBase的值（选alignContent而不选alignItems的理由是align-content 只适用多行的flex容器（也就是flex容器中的子项不止一行时该属性才有效果），它的作用是当flex容器在交叉轴上有多余的空间时，将子项作为一个整体（属性值为：flex-start、flex-end、center时）进行对齐）
 	4. 循环每一行的交叉轴，计算出每一行上的高度，位置
 
-  
+* 第五步 绘制 单个元素
+  * 绘制需要依赖一个图形环境
+  * 我们这里采用了 npm 包 images
+  * 绘制在一个 viewport 上进行
+  * 与绘制相关的属性： background-color等
+
+* 第六步 绘制
+  * 递归调用子元素的绘制方法完成 DOM 树的绘制
+  * 忽略一些不需要绘制的节点(实际的浏览器中，文字绘制是难点，需要依赖字体库，我们这里忽略,实际的浏览器中，还会对一些图层左 compositing， 我们这里也忽略了)
+

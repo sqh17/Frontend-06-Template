@@ -410,5 +410,5 @@ module.exports.parserHTML = function parserHTML(html){
   // 文本结束时可能没有结束符，所以在这里给定一个结束符。
   // 这里的结束符不能有任何意义，所以用来 Symbol
   state = state(EOF);
-  return stack;
+  return stack[0];
 } 

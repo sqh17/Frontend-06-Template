@@ -1,6 +1,7 @@
 const net = require('net');
 const parser = require('./parser.js');
-
+const images = require('images')
+const render = require('./render.js')
 class Request {
     /**
      * Set the options of the request
@@ -269,7 +270,9 @@ void async function () {
 
     // 真正的浏览器里，html 是被逐段的取回解析的。为了理解方便，这里一次处理所有 body 内容
     let dom = parser.parserHTML(response.body);
-
+    let viewport = images(800,600);
+    render(viewport,dom);
+    viewport.save("viewport.jpg");
     console.log('dom:');
     console.log(JSON.stringify(dom, null, '    '));
     console.log('');
