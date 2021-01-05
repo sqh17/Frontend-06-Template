@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>match</title>
+  <style>
+    div #id.class {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div>
+    <div class="class" id="id">123</div>
+  </div>
+  <script>
+    function match(selector, element) {
+      const selectorList = selector.split(' ').reverse(); // ["#root.root", "div"]
+      for (const s of selectorList) {
+        const list = s.match(/(#|.)?\w+/g);
+        for (const c of list) {
+          if (c.charAt(0) === '#') {
+            if (!(element.id && element.id === c.replace('#', ''))) 
+              return false;
+          } else if (c.charAt(0) === '.') {
+            let classList = [...element.classList];
+            if (!(classList.length > 0 && classList.includes(c.replace('.', '')))) 
+              return false;
+          } else {
+            if (element.tagName.toLowerCase() !== c) 
+              return false;
+          }
+        }
+      }
+      console.log('yes')
+      return true;
+    }
+
+
+    match("div #id.class", document.getElementById("id"));
+  </script>
+</body>
+
+</html>
