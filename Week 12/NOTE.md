@@ -22,3 +22,11 @@
   * text-top/text-bottom 中文等方块字大小往上往下偏移一些
   * line-top/line-bottom 会受元素撑开的情况
   * inline-block元素的基线会随着元素字体变化而变化，所以我们通常用vertical-algin:top/middle/bottom来给他与父元素上或下或中对齐
+
+* 正常流的块级排布
+  * float与clear
+    * 同一个盒中多个元素都设置了float，一行放不下会换行。
+    * 若有一个元素设置了浮动，那么会被挤到左边或者右边，剩余的就不占据浮动元素的位置,若浮动元素又碰到浮动元素，那么会停下继续换行
+    * clear是找一个干净的空间来放浮动元素，值可有right/left/both，可以用来强制换行。
+
+* 正常流里只有BFC会发生margin折叠
