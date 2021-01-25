@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reverseDom</title>
+</head>
+<body>
+  <div id="a">
+    <span>1</span>
+    <p>2</p>
+    <div>3</div>
+    <h2>4</h2>
+    <p>5</p>
+  </div>
+  <script>
+    let ele = document.getElementById('a');
+
+    function reverseChildren(ele){
+      let arr = Array.prototype.slice.call(ele.childNodes);
+      for(let i of arr){
+        ele.removeChild(i)
+      }
+      ele.innerHtml = '';
+      arr.reverse();
+      for(let i of arr){
+        ele.appendChild(i)
+      }
+    }
+
+    function reverseChildren1(ele){
+      let len = ele.childNodes.length;
+      while(len-- > 0){
+        ele.appendChild(ele.childNodes[len])
+      }
+    }
+
+    function reverseChildren2(ele){
+      let range = document.createRange();
+      range.selectNodeContents(ele);
+      let fragment = range.extractContents();
+      let len = fragment.childNodes.length;
+      while(len-- > 0){
+        fragment.appendChild(fragment.childNodes[len])
+      }
+      ele.appendChild(fragment)
+    }
+    // reverseChildren(ele)
+    // reverseChildren1(ele)
+    reverseChildren2(ele)
+  </script>
+</body>
+</html>
