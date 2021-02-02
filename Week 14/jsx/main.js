@@ -31,7 +31,7 @@ class Carousel extends Component{
         next.style.transition = "";
         current.style.transform = `translateX(${-100 - currentIndex * 100 }%)`
         next.style.transform = `translateX(${- nextIndex * 100 }%)`
-        
+    
         currentIndex = nextIndex;
       },16) // 16ms为一帧
     },3000)
