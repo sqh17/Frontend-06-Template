@@ -40,3 +40,48 @@
         window.cancelAnimationFrame(frame)
       })
     ```
+
+###### Event()
+  创建一个新的事件对象 Event
+  `event = new Event(typeArg, eventInit);`
+    * typeArg 创建的事件名称
+    * eventInit EventInit 类型的字典
+      * bubbles 是否冒泡
+      * cancelable 能否被取消
+      * composed 指示事件是否会在影子DOM根节点之外触发侦听器
+
+  ```javascript
+  /* 创建一个事件对象，名字为newEvent，类型为build */
+  var newEvent = new CustomEvent('build', { bubbles:true,cancelable:true,composed:true });
+
+  /* 给这个事件对象创建一个属性并赋值，这里绑定的事件要和我们创建的事件类型相同，不然无法触发 */
+  newEvent.name = "新的事件！";
+
+  /* 将自定义事件绑定在document对象上 */
+  document.addEventListener("build",function(){
+      alert("你触发了使用CustomEvent创建的自定义事件！" + newEvent.name);
+  },false)
+
+  /* 触发自定义事件 */
+  document.dispatchEvent(newEvent);
+  ```
+
+###### CustomEvent()
+  也是自定义事件，要向事件对象添加更多数据，可以使用 CustomEvent 接口,参数方式和Event一样，detail作为额外参数，detail 属性可用于传递自定义数据。
+
+  ```javascript
+  /* 创建一个事件对象，名字为newEvent，类型为build */
+  var newEvent = new CustomEvent('build',{
+      detail: {
+          dog:"peter",cat:"tom"
+      }
+  });
+
+  /* 将自定义事件绑定在document对象上 */
+  document.addEventListener("build", function(){
+      console.log(event.detail.dog,event.detail.cat ); //  petre tom
+  },false)
+
+  /* 触发自定义事件 */
+  document.dispatchEvent(newEvent);
+  ```

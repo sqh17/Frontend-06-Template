@@ -1,7 +1,18 @@
-<script src="./gesture.js"></script>
+<!-- 封装前 -->
+<!-- <script src="./gesture.js"></script>
 <body oncontextmenu="event.preventDefault()"></body>
 <script>
     document.documentElement.addEventListener("tap", () => {
         console.log("tap event trigger!!!");
     })
-</script> 
+</script>  -->
+
+<!-- 封装后 -->
+<body oncontextmenu="event.preventDefault()"></body>
+<script type="module">
+    import {enableGesture} from "./gestureClass.js"
+    enableGesture(document.documentElement);
+    document.documentElement.addEventListener("tap", () => {
+        console.log("tap event trigger!!!");
+    })
+</script>
