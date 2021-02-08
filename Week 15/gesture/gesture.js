@@ -9,6 +9,7 @@ element.addEventListener("mousedown", event => {
 
   start(event, context);
   let mousemove = event => {
+    console.log('1111111',event.buttons) // 用掩码记录按键位置1 2 4 8 16
     let button = 1;
 
     while (button <= event.buttons) {
@@ -33,7 +34,7 @@ element.addEventListener("mousedown", event => {
     let context = contexts.get("mouse" + (1 << event.button));
     end(event, context);
     contexts.delete("mouse" + (1 << event.button));
-    if (event.buttons === 0) {
+    if (event.buttons === 0) { // 当监听鼠标未按下时
       document.removeEventListener("mousemove", mousemove);
       document.removeEventListener("mouseup", mouseup);
       isListeningMouse = false;
@@ -47,12 +48,12 @@ element.addEventListener("mousedown", event => {
 })
 
 
-let contexts = new Map();
+let contexts = new Map(); // 由于会有很多touch，所以用Map存取对应的touch
 
 element.addEventListener("touchstart", event => {
   for (let touch of event.changedTouches) {
     let context = Object.create(null);
-    contexts.set(touch.identifier, context);
+    contexts.set(touch.identifier, context);// identifier独一无二，类似于id
     start(touch, start);
   }
 })
