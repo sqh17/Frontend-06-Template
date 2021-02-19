@@ -95,7 +95,10 @@ export class Recoginizer {
         y: point.clientY,
       },
     ];
-
+    this.dispatcher.dispatch("start", {
+      clientX: point.clientX,
+      clientY: point.clientY
+    });
     context.isTap = true;
     context.isPan = false;
     context.isPress = false;
@@ -190,15 +193,25 @@ export class Recoginizer {
     }
 
     if (context.isPan) {      
-        this.dispatcher.dispatch("panend", {
+      this.dispatcher.dispatch("panend", {
           startX: context.startX,
           startY: context.startY,
           clientX: point.clientX,
           clientY: point.clientY,
           isVertical: context.isVertical,
           isFlick: context.isFlick,
+          velocity: v,
       });
-      }
+    }
+    this.dispatcher.dispatch("end", {
+      startX: context.startX,
+      startY: context.startY,
+      clientX: point.clientX,
+      clientY: point.clientY,
+      isVertical: context.isVertical,
+      isFlick: context.isFlick,
+      velocity: v,
+    });
   }
 
   cancel(point, context) {
